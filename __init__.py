@@ -1,2 +1,2 @@
-from fields import TransDbField
+from fields import TransCharField, TransTextField
 
