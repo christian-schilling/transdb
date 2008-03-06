@@ -5,11 +5,11 @@ from django.newforms.util import flatatt
 
 class TransCharWidget(Widget):
 	def value_to_dict(self, value):
-		if isinstance(value, dict):
-			value_dict = value
+		if isinstance(value.raw_data, dict):
+			value_dict = value.raw_data
 		else:
-			if value:
-				value_dict = eval(value)
+			if value.raw_data:
+				value_dict = eval(value.raw_data)
 				if not isintance(value_dict, dict):
 					value_dict = {}
 			else:
@@ -29,14 +29,14 @@ class TransCharWidget(Widget):
 			value_for_lang = ''
 			if value_dict.has_key(lang_code):
 				value_for_lang = value_dict[lang_code]
-			output.append('<li style="list-style-type: none">%s: %s</li>' % (lang_name, self.get_input(name, value_for_lang, lang_code, attrs)))
+			output.append('<li style="list-style-type: none; float: left; margin-left: 1em;"><span style="display: block;">%s:</span>%s</li>' % (lang_name, self.get_input(name, value_for_lang, lang_code, attrs)))
 		return mark_safe(u'<ul id="id_%s">%s</ul>' % (name, u''.join(output)))
 	
 	def value_from_datadict(self, data, files, name):
-		output = {}
+		value = {}
 		for lang_code, lang_name in settings.LANGUAGES:
-			output[lang_code] = data.get('%s_%s' % (name, lang_code))
-		return output
+			value[lang_code] = data.get('%s_%s' % (name, lang_code))
+		return value
 
 class TransTextWidget(TransCharWidget):
 	def __init__(self, attrs=None):
@@ -45,6 +45,5 @@ class TransTextWidget(TransCharWidget):
 			self.attrs.update(attrs)
 
 	def get_input(self, name, value, lang, attrs):
-		#final_attrs = self.build_attrs(attrs, name=name)
 		return '<textarea name="%s_%s"%s>%s</textarea>' % (name, lang, flatatt(self.attrs), value)
 
