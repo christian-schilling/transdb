@@ -4,32 +4,27 @@ from django.utils.safestring import mark_safe
 from django.newforms.util import flatatt
 
 class TransCharWidget(Widget):
-	def value_to_dict(self, value):
-		if isinstance(value.raw_data, dict):
-			value_dict = value.raw_data
-		else:
-			if value.raw_data:
-				value_dict = eval(value.raw_data)
-				if not isintance(value_dict, dict):
-					value_dict = {}
-			else:
-				value_dict = {}
-		return value_dict
-
+	'''
+	Widget that shows many labeled inputs
+	Can be subclassed to change the type of input to display (overwritting "get_input()" method) 
+	'''
 	def get_input(self, name, value, lang, attrs):
 		value_html = ''
 		if value:
 			value_html = ' value="%s"' % value
-		return '<input name="%s_%s"%s/>' % (name, lang, value_html)
+		return '<input type="text" name="%s_%s"%s/>' % (name, lang, value_html)
 		
 	def render(self, name, value, attrs=None):
-		value_dict = self.value_to_dict(value)
+		if value and hasattr(value, 'raw_data'):
+			value_dict = value.raw_data
+		else:
+			value_dict = {}
 		output = []
 		for lang_code, lang_name in settings.LANGUAGES:
 			value_for_lang = ''
 			if value_dict.has_key(lang_code):
 				value_for_lang = value_dict[lang_code]
-			output.append('<li style="list-style-type: none; float: left; margin-left: 1em;"><span style="display: block;">%s:</span>%s</li>' % (lang_name, self.get_input(name, value_for_lang, lang_code, attrs)))
+			output.append('<li style="list-style-type: none; float: left; margin-right: 1em;"><span style="display: block;">%s:</span>%s</li>' % (lang_name, self.get_input(name, value_for_lang, lang_code, attrs)))
 		return mark_safe(u'<ul id="id_%s">%s</ul>' % (name, u''.join(output)))
 	
 	def value_from_datadict(self, data, files, name):
@@ -39,6 +34,9 @@ class TransCharWidget(Widget):
 		return value
 
 class TransTextWidget(TransCharWidget):
+	'''
+	Subclasses TransCharField to use textarea insted of input
+	'''
 	def __init__(self, attrs=None):
 		self.attrs = {'cols': '40', 'rows': '10'}
 		if attrs:
