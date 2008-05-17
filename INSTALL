@@ -1,0 +1,21 @@
+INSTALLATION
+
+TransDb installation procedure is exactly the same way that most Python packages.
+
+Note that TransDb will be installed in your default Python packages directory, so
+you'll probably need root privileges to install TransDb to this directory.
+
+To install TransDb in your default site-packages directory run (inside this directory):
+
+    python setup.py install
+
+To install directly from subversion run (inside directory where you want to install):
+
+    svn checkout http://transdb.googlecode.com/svn/trunk/transdb/ transdb
+
+Actually, it can be installed copying transdb directory to any directory included in PYTHON_PATH.
+
+REQUIREMENTS
+
+TransDb requires Python 2.3 or later, and Django newforms-admin branch.
+
