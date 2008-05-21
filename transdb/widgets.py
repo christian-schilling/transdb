@@ -15,7 +15,9 @@ class TransCharWidget(Widget):
         return '<input type="text" name="%s_%s"%s%s/>' % (name, lang, value_html, id_html)
 
     def render(self, name, value, attrs=None):
-        if value and hasattr(value, 'raw_data'):
+        if isinstance(value, dict) and value.has_key(settings.LANGUAGE_CODE):
+            value_dict = value
+        elif value and hasattr(value, 'raw_data'):
             value_dict = value.raw_data
         else:
             value_dict = {}
