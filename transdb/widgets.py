@@ -2,6 +2,7 @@ from django.newforms.widgets import Widget
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_unicode
+from django.utils.html import conditional_escape
 from django.newforms.util import flatatt
 
 class TransCharWidget(Widget):
@@ -10,9 +11,13 @@ class TransCharWidget(Widget):
     Can be subclassed to change the type of input to display (overwritting "get_input()" method) 
     '''
     def get_input(self, name, value, lang, attrs, id=None):
-        value_html = (value and ' value="%s"' % value) or ''
-        id_html = (id and ' id="id_%s"' % name) or ''
-        return '<input type="text" name="%s_%s"%s%s/>' % (name, lang, value_html, id_html)
+        attrs = self.build_attrs(attrs,
+            type='text',
+            name='%s_%s' % (name, lang),
+            id='id_%s' % name,
+            value=force_unicode(value)
+        )
+        return '<input%s />' % flatatt(attrs)
 
     def render(self, name, value, attrs=None):
         if isinstance(value, dict) and value.has_key(settings.LANGUAGE_CODE):
@@ -49,6 +54,9 @@ class TransTextWidget(TransCharWidget):
             self.attrs.update(attrs)
 
     def get_input(self, name, value, lang, attrs, id=None):
-        id_html = (id and ' id="id_%s"' % name) or ''
-        return '<textarea name="%s_%s"%s%s>%s</textarea>' % (name, lang, flatatt(self.attrs), id_html, value)
+        attrs = self.build_attrs(attrs,
+            name='%s_%s' % (name, lang),
+            id='id_%s' % name,
+        )
+        return '<textarea%s>%s</textarea>' % (flatatt(attrs), conditional_escape(force_unicode(value)))
 
