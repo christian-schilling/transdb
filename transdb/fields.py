@@ -34,6 +34,9 @@ class TransDbValue(unicode):
         else:
             return ''
 
+    def set_in_language(self, language, value):
+        self.raw_data[language] = value
+
 class TransFormField(Field):
     '''
     newforms field, used when ModelForm (or deprecated form_for_model/form_form_instance) is called
