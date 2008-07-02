@@ -1,4 +1,4 @@
-from django.db import models
+fom django.db import models
 from django.conf import settings
 from django.utils.translation import get_language
 from django.utils.translation import ugettext as _
@@ -66,7 +66,7 @@ class TransField(models.Field):
             except Exception:
                 python_value = None
         if isinstance(python_value, dict) and (python_value.has_key(get_language()) or python_value.has_key(settings.LANGUAGE_CODE)):
-            if python_value.has_key(get_language()) and python_value[get_language]:
+            if python_value.has_key(get_language()) and python_value[get_language()]:
                 result = TransDbValue(python_value[get_language()])
             elif python_value.has_key(settings.LANGUAGE_CODE):
                 result = TransDbValue(python_value[settings.LANGUAGE_CODE])
