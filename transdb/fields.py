@@ -66,10 +66,12 @@ class TransField(models.Field):
             except Exception:
                 python_value = None
         if isinstance(python_value, dict) and (python_value.has_key(get_language()) or python_value.has_key(settings.LANGUAGE_CODE)):
-            if python_value.has_key(get_language()):
+            if python_value.has_key(get_language()) and python_value[get_language]:
                 result = TransDbValue(python_value[get_language()])
             elif python_value.has_key(settings.LANGUAGE_CODE):
                 result = TransDbValue(python_value[settings.LANGUAGE_CODE])
+            else:
+                result = u''
             result.raw_data = python_value
         else:
             result = TransDbValue(value)
