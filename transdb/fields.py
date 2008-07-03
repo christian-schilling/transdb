@@ -32,7 +32,7 @@ class TransDbValue(unicode):
         if self.raw_data and self.raw_data.has_key(language):
             return self.raw_data[language]
         else:
-            return ''
+            return u''
 
     def set_in_language(self, language, value):
         self.raw_data[language] = value
