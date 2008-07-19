@@ -3,8 +3,8 @@ from django.conf import settings
 from django.utils.translation import get_language
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_unicode
-from django.newforms.fields import Field
-from django.newforms import ValidationError
+from django.forms.fields import Field
+from django.forms import ValidationError
 from widgets import TransCharWidget, TransTextWidget
 
 def get_default_language_name():
@@ -39,7 +39,7 @@ class TransDbValue(unicode):
 
 class TransFormField(Field):
     '''
-    newforms field, used when ModelForm (or deprecated form_for_model/form_form_instance) is called
+    forms field, used when ModelForm (or deprecated form_for_model/form_form_instance) is called
     Also implements form validation in admin
     '''
     def clean(self, value):

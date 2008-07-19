@@ -1,9 +1,9 @@
-from django.newforms.widgets import Widget
+from django.forms.widgets import Widget
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_unicode
 from django.utils.html import conditional_escape
-from django.newforms.util import flatatt
+from django.forms.util import flatatt
 
 class TransCharWidget(Widget):
     '''
