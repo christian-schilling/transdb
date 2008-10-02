@@ -46,7 +46,7 @@ class TransFormField(Field):
         if isinstance(value, dict) and self.required and not value[settings.LANGUAGE_CODE]:
             raise ValidationError, _("This field cannot be null for default language '%s'.") % get_default_language_name()
         else:
-            return value
+            return super(TransFormField, self).clean(value)
 
 class TransField(models.Field):
     '''
