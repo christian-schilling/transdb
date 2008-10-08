@@ -1,11 +1,15 @@
 from django.core.serializers import base, xml_serializer
 from django.db import models
+from django.utils.encoding import smart_unicode
 
 from fields import TransField
 
-
 class Serializer(xml_serializer.Serializer):
-    pass
+    def get_string_value(self, obj, field):
+        if isinstance(field, TransField):
+            return smart_unicode(getattr(obj, field.name).raw_data)
+        else:
+            return super(Serializer, self).get_string_value(obj, field)
 
 
 class Deserializer(xml_serializer.Deserializer):
