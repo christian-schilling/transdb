@@ -58,6 +58,9 @@ class TransField(models.Field):
         return 'TextField'
 
     def to_python(self, value):
+        if isinstance(value, TransDbValue):
+            return value
+
         if isinstance(value, dict): # formfield method makes this function be called with value as a dict
             python_value = value
         else:
