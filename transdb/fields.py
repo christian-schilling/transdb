@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.utils.translation import get_language
 from django.utils.translation import ugettext as _
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_unicode, smart_str, smart_unicode
 from django.forms.fields import Field
 from django.forms import ValidationError
 from widgets import TransCharWidget, TransTextWidget
@@ -66,6 +66,8 @@ class TransField(models.Field):
         else:
             try:
                 python_value = eval(value)
+                for k,v in python_value.items():
+                    python_value[k] = smart_unicode(v)
             except Exception:
                 python_value = None
         if isinstance(python_value, dict) and (python_value.has_key(get_language()) or python_value.has_key(settings.LANGUAGE_CODE)):
@@ -82,7 +84,9 @@ class TransField(models.Field):
         return result
     
     def get_db_prep_save(self, value):
-        return unicode(value.raw_data)
+        value = [u"'%s': '%s'" % (k, v) for k, v in value.raw_data.items()]
+        value = u'{%s}' % u','.join(value)
+        return smart_str(value)
 
     def formfield(self, **kwargs):
         defaults = {'form_class': TransFormField}
@@ -93,7 +97,10 @@ class TransField(models.Field):
         '''
         for serializing objects
         '''
-        return {self.attname: self._get_val_from_obj(obj).raw_data} 
+        raw_data = self._get_val_from_obj(obj).raw_data.copy()
+        for k,v in raw_data.items():
+            raw_data[k] = smart_str(v)
+        return {self.attname: raw_data}
 
 class TransCharField(TransField):
     '''
