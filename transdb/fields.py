@@ -82,9 +82,9 @@ class TransField(models.Field):
             result = TransDbValue(value)
             result.raw_data = {settings.LANGUAGE_CODE: value}
         return result
-    
+
     def get_db_prep_save(self, value):
-        value = [u"'%s': '%s'" % (k, v) for k, v in value.raw_data.items()]
+        value = [u"'%s': '''%s'''" % (k, v) for k, v in value.raw_data.items()]
         value = u'{%s}' % u','.join(value)
         return smart_str(value)
 
