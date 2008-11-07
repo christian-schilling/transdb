@@ -43,10 +43,11 @@ class TransFormField(Field):
     Also implements form validation in admin
     '''
     def clean(self, value):
-        if isinstance(value, dict) and self.required and not value[settings.LANGUAGE_CODE]:
-            raise ValidationError, _("This field cannot be null for default language '%s'.") % get_default_language_name()
-        else:
-            return super(TransFormField, self).clean(value)
+        if isinstance(value, dict) and self.required:
+            filled_value = [ v for v in value.values() if bool(v) ]
+            if not filled_value:
+                raise ValidationError, _("This field is required.")
+        return super(TransFormField, self).clean(value)
 
 class TransField(models.Field):
     '''
