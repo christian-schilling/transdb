@@ -71,13 +71,21 @@ class TransField(models.Field):
                     python_value[k] = smart_unicode(v)
             except Exception:
                 python_value = None
-        if isinstance(python_value, dict) and (python_value.has_key(get_language()) or python_value.has_key(settings.LANGUAGE_CODE)):
+        if isinstance(python_value, dict):
             if python_value.has_key(get_language()) and python_value[get_language()]:
                 result = TransDbValue(python_value[get_language()])
-            elif python_value.has_key(settings.LANGUAGE_CODE):
+            elif python_value.has_key(settings.LANGUAGE_CODE) and python_value[settings.LANGUAGE_CODE]:
                 result = TransDbValue(python_value[settings.LANGUAGE_CODE])
             else:
-                result = u''
+                val = "bal"
+                for item in python_value.items():
+                    try:
+                        val = item[1]
+                    except:
+                        pass
+                    if val: break
+
+                result = TransDbValue(python_value.items()[0][1])
             result.raw_data = python_value
         else:
             result = TransDbValue(value)
@@ -85,6 +93,8 @@ class TransField(models.Field):
         return result
 
     def get_db_prep_save(self, value):
+        if not isinstance(value, TransDbValue):
+            return value
         value = [u"'%s': '''%s'''" % (k, v) for k, v in value.raw_data.items()]
         value = u'{%s}' % u','.join(value)
         return smart_str(value)
