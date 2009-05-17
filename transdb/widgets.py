@@ -19,7 +19,7 @@ class TransCharWidget(Widget):
         )
         return '<input%s />' % flatatt(attrs)
 
-    def render(self, name, value, attrs=None):
+    def get_all_inputs(self, name, value, attrs=None, format="span"):
         if isinstance(value, dict) and value.has_key(settings.LANGUAGE_CODE):
             value_dict = value
         elif value and hasattr(value, 'raw_data'):
@@ -35,8 +35,17 @@ class TransCharWidget(Widget):
                 input = self.get_input(name, value_for_lang, lang_code, attrs, True)
             else:
                 input = self.get_input(name, value_for_lang, lang_code, attrs)
-            output.append('<li style="list-style-type: none; float: left; margin-right: 1em;"><span style="display: block;">%s:</span>%s</li>' % (force_unicode(lang_name), input))
-        return mark_safe(u'<ul>%s</ul>' % (u''.join(output)))
+            output.append(format % (force_unicode(lang_name), input))
+
+        return u''.join(output)
+
+    def render(self, name, value, attrs=None):
+        return mark_safe(u'<div class="transdb">%s</div>'
+                         % (self.get_all_inputs(
+                                name,value,attrs,
+                                '<div style="margin-right: 1em;float:left;"><span class="transdb_lang" style="">%s: </span>%s</div>'),
+                            )
+                        )
     
     def value_from_datadict(self, data, files, name):
         value = {}
@@ -48,6 +57,13 @@ class TransTextWidget(TransCharWidget):
     '''
     Subclasses TransCharField to use textarea insted of input
     '''
+    class Media:
+        js = (
+            '/site_media/js/jquery.js',
+            '/site_media/js/jquery.accordion.js',
+            '/site_media/js/transdb_admin.js',
+        )
+
     def __init__(self, attrs=None):
         self.attrs = {'cols': '40', 'rows': '10'}
         if attrs:
@@ -60,3 +76,10 @@ class TransTextWidget(TransCharWidget):
         )
         return '<textarea%s>%s</textarea>' % (flatatt(attrs), conditional_escape(force_unicode(value)))
 
+    def render(self, name, value, attrs=None):
+        return mark_safe(u'<div class="transdb accordion" style="float:left; height:300px;">%s</div>'
+                         % (self.get_all_inputs(
+                                name,value,attrs,
+                                '<div style="margin-right: 1em;"><h2 class="transdb_lang" style="">%s</h2>%s</div>'),
+                            )
+                        )
